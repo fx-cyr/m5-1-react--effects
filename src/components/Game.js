@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Item from "./Item"
 
 import cookieSrc from "../cookie.svg";
-
 const items = [
   { id: "cursor", name: "Cursor", cost: 10, value: 1 },
   { id: "grandma", name: "Grandma", cost: 100, value: 10 },
@@ -18,6 +18,9 @@ const Game = () => {
     grandma: 0,
     farm: 0,
   };
+  const handleClick = () => {
+    // TBD in next exercice
+  }
 
   return (
     <Wrapper>
@@ -28,12 +31,24 @@ const Game = () => {
           <strong>0</strong> cookies per second
         </Indicator>
         <Button>
-          <Cookie src={cookieSrc} />
+          <Cookie 
+          src={cookieSrc}
+          onClick={handleClick} />
         </Button>
       </GameArea>
 
       <ItemArea>
         <SectionTitle>Items:</SectionTitle>
+        {items.map((item) => {
+          return <Item 
+            id={item.id}        
+            name={item.name}
+            cost={item.cost}
+            value={item.value}
+            numOwned={purchasedItems}
+            handleClick={handleClick} 
+          />
+        })}
         {/* TODO: Add <Item> instances here, 1 for each item type. */}
       </ItemArea>
       <HomeLink to="/">Return home</HomeLink>
