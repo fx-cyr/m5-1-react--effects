@@ -1,52 +1,78 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import Item from "./Item"
+import useInterval from "../hooks/use-interval.hook"
+import useDocTitleHook from "../hooks/use-docTitle.hook"
+import useKeyDown from "../hooks/use-keyDown.hook"
 
 import cookieSrc from "../cookie.svg";
 const items = [
   { id: "cursor", name: "Cursor", cost: 10, value: 1 },
-  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
+  { id: "grandma", name: "Grandma", cost: 100, value: 10},
   { id: "farm", name: "Farm", cost: 1000, value: 80 },
 ];
 
 const Game = () => {
   // TODO: Replace this with React state!
-  const numCookies = 100;
-  const purchasedItems = {
-    cursor: 0,
-    grandma: 0,
-    farm: 0,
+  const [numCookies, setNumCookies] = useState(100)
+  const [purchasedItems, setPurchasedItems] = useState({cursor: 0, grandma:0, farm: 0})
+  const handlePurchase = (item) => {
+    if(item.cost <= numCookies) {
+    setNumCookies(numCookies - item.cost)
+    setPurchasedItems({...purchasedItems, [item.id]: purchasedItems[item.id] + 1});
+    }
+    else {
+      alert("Need more dought mate.")
+    }
   };
-  const handleClick = () => {
-    // TBD in next exercice
+  
+  const cookieGenerator = (purchasedItems) => {
+   const total = purchasedItems.cursor * 1 + purchasedItems.grandma * 10 + purchasedItems.farm * 80
+   return total
   }
 
+  useDocTitleHook(`You're at ${numCookies}`, "Cookie Clicker Idle Game")
+
+  useInterval(() => {
+    const numOfGeneratedCookies = cookieGenerator(purchasedItems);
+    setNumCookies(numCookies + numOfGeneratedCookies)
+  }, 1000);
+
+  const handleCookie = () => {
+    setNumCookies(numCookies + 1)
+    console.log("+1");
+  };
+
+useKeyDown("Space", handleCookie);
+  
   return (
     <Wrapper>
       <GameArea>
         <Indicator>
           <Total>{numCookies} cookies</Total>
-          {/* TODO: Calcuate the cookies per second and show it here: */}
-          <strong>0</strong> cookies per second
+          {cookieGenerator(purchasedItems)} cookies automatically baked per second
         </Indicator>
         <Button>
           <Cookie 
           src={cookieSrc}
-          onClick={handleClick} />
+          onClick={handleCookie} />
         </Button>
       </GameArea>
 
       <ItemArea>
         <SectionTitle>Items:</SectionTitle>
-        {items.map((item) => {
+        {items.map((item, index) => {
           return <Item 
+            item={item}
             id={item.id}        
             name={item.name}
             cost={item.cost}
             value={item.value}
-            numOwned={purchasedItems}
-            handleClick={handleClick} 
+            isFocused={item.isFocused}
+            purchasedItems={purchasedItems}
+            handleClick={handlePurchase} 
+            index={index}
           />
         })}
         {/* TODO: Add <Item> instances here, 1 for each item type. */}

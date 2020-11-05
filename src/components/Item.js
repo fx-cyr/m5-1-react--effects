@@ -1,18 +1,26 @@
-import React from "react";
+import React, {useEffect, useRef}from "react";
 import styled from "styled-components";
 
 const Item = (props) => {
-let {id, name, cost, value} = props
-let { numOwned } = props
-console.log(numOwned.cursor)
-console.log(props)
+let {id, name, cost, value, item, index} = props
+let { purchasedItems } = props
+const {handleClick} = props
+const focusRef = useRef()
+
+useEffect(()=> {
+    if (index === 0) {
+        focusRef.current.focus()
+    }
+}, [])
+// console.log(purchasedItems)
+// console.log(props)
     return (
         <Wrapper>
             <ItemInfo>    
-                <ItemName>{name}</ItemName>
-                <ItemDescription>Cost: {cost} cookie(s). Produces {value} cookies/second.</ItemDescription>
+                <ItemButton ref={focusRef} onClick={(ev) => handleClick(item)}>{name}</ItemButton>
+    <ItemDescription>Cost: {cost} cookie(s). Produces {value} cookies/second.</ItemDescription>
             </ItemInfo>
-            <ItemCount>{numOwned[id]}</ItemCount>
+            <ItemCount>{purchasedItems[item.id]}</ItemCount>
         </Wrapper>
     )
 }
@@ -28,7 +36,16 @@ const ItemInfo = styled.p`
 display:block;
 `;
 
-const ItemName = styled.h2`
+const ItemButton = styled.button`
+background: #222;
+color:white;
+font-size:22px;
+cursor: pointer;
+margin-bottom:10px;
+padding:5px 10px;
+text-align:center;
+border: 2px solid peru;
+border-radius: 5px;
 `;
 
 const ItemDescription = styled.p`
